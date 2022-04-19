@@ -39,6 +39,7 @@ class VrpSolution {
                    ? (" = " + std::to_string(path_distance_sum) + "\n")
                    : " -> ");
       }
+      os << "\n";
     }
     os << "Distance Sum: " << solution.GetPathsDistanceSum() << "\n";
     return os;

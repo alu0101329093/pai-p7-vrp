@@ -30,6 +30,7 @@ VrpGraspSolution VrpGrasp::Solve(const VrpProblem& problem,
         problem, partial_solution, random_solutions_amount, clients_set)};
     solutions_history.push_back(solution);
     std::size_t distance_sum{solution.GetPathsDistanceSum()};
+
     if (distance_sum < best_solution_distance) {
       best_solution = solutions_history.size() - 1;
       best_solution_distance = distance_sum;
@@ -169,7 +170,25 @@ VrpSolution VrpGrasp::SolveStartedProblem(const VrpProblem& problem,
     }
   }
 
-  return {vehicles_paths};
+  return {SetReturnPaths(problem, vehicles_paths)};
+}
+
+/**
+ * @brief Get paths adding return to base
+ *
+ * @param problem
+ * @param vehicles_paths
+ * @return VehiclesPaths
+ */
+VehiclesPaths VrpGrasp::SetReturnPaths(const VrpProblem& problem,
+                                       const VehiclesPaths& vehicles_paths) {
+  VehiclesPaths return_path{vehicles_paths};
+  for (std::size_t i = 0; i < return_path.size(); ++i) {
+    ClientInfo node{return_path[i].back()};
+    return_path[i].push_back(
+        {0, problem.GetDistanceMatrix()[node.GetId()][0], 0});
+  }
+  return return_path;
 }
 
 }  // namespace daa

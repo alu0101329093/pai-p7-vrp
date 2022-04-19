@@ -47,6 +47,9 @@ class VrpGrasp {
                                  const VrpSolution& partial_solution,
                                  std::size_t random_solutions_amount,
                                  ClientsSet& clients_set);
+
+  VehiclesPaths SetReturnPaths(const VrpProblem& problem,
+                               const VehiclesPaths& vehicles_paths);
 };
 
 }  // namespace daa
