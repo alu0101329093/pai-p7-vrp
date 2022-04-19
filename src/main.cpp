@@ -14,6 +14,12 @@ int main(int argc, char* argv[]) {
 
 namespace daa {
 
+/**
+ * @brief Read problem info from a file
+ *
+ * @param file_name
+ * @return VrpProblem
+ */
 VrpProblem ReadInfoFromFile(const std::string& file_name) {
   std::ifstream input_file{file_name};
   VrpProblem problem{};
