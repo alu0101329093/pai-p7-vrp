@@ -8,17 +8,29 @@ VrpGraspSolution VrpGrasp::Solve(const VrpProblem& problem,
                                  std::size_t max_unchanged_iterations) {
   std::srand(std::time(nullptr));
   std::vector<VrpSolution> solutions_history{};
+  std::size_t best_solution_distance{SIZE_MAX};
   std::size_t best_solution{};
   std::size_t unchanged_iterations{};
+
   for (std::size_t i = 0;
        i < iterations && unchanged_iterations < max_unchanged_iterations; ++i) {
     ClientsSet clients_set{GenerateClientSet(problem)};
-    auto initial_path{
+    VrpSolution partial_solution{
         SetInitialPath(problem, random_solutions_amount, clients_set)};
-    // std::set<ClientInfo> initial_options{GetClientBestOptions(
-    //     problem, clients_list, 0,
-    //     random_solutions_amount * problem.GetVehiclesAmount())};
+    VrpSolution solution{SolveStartedGreedy(
+        problem, partial_solution, random_solutions_amount, clients_set)};
+    solutions_history.push_back(solution);
+    std::size_t distance_sum{solution.GetPathsDistanceSum()};
+    if (distance_sum < best_solution_distance) {
+      best_solution = solutions_history.size() - 1;
+      best_solution_distance = distance_sum;
+      unchanged_iterations = 0;
+    } else {
+      ++unchanged_iterations;
+    }
   }
+
+  return VrpGraspSolution{solutions_history, best_solution};
 }
 
 ClientsSet VrpGrasp::GenerateClientSet(const VrpProblem& problem) {
@@ -29,16 +41,15 @@ ClientsSet VrpGrasp::GenerateClientSet(const VrpProblem& problem) {
   return clients_set;
 }
 
-std::set<ClientInfoFrom> VrpGrasp::GetClientsBestOptions(
+std::set<ClientInfo> VrpGrasp::GetClientsBestOptions(
     const VrpProblem& problem, const ClientsSet& clients_set,
     const ClientsSet& current_clients, std::size_t amount) {
   ClientsQueue clients_queue{};
   for (auto current_client : current_clients) {
     for (auto client : clients_set) {
-      clients_queue.push(
-          {current_client,
-           ClientInfo{client,
-                      problem.GetDistanceMatrix()[current_client][client]}});
+      clients_queue.push(ClientInfo{
+          client, problem.GetDistanceMatrix()[current_client][client],
+          current_client});
     }
   }
   std::set<ClientInfo> best_options{};
@@ -61,7 +72,7 @@ VrpSolution VrpGrasp::SetInitialPath(const VrpProblem& problem,
                                      std::size_t random_solutions_amount,
                                      ClientsSet& clients_set) {
   std::set<ClientInfo> initial_options{GetClientsBestOptions(
-      problem, clients_set, 0,
+      problem, clients_set, {0},
       random_solutions_amount * problem.GetVehiclesAmount())};
 
   VehiclesPaths vehicles_paths{problem.GetVehiclesAmount(),
@@ -83,8 +94,35 @@ VrpSolution VrpGrasp::SolveStartedGreedy(const VrpProblem& problem,
                                          ClientsSet& clients_set) {
   VehiclesPaths vehicles_paths{partial_solution.GetVehiclesPaths()};
   while (!clients_set.empty()) {
-    auto best_options{GetClientsBestOptions(problem, clients_set, )};
+    ClientsSet current_clients{};
+    for (const auto& path : vehicles_paths) {
+      if (path.size() > 0)
+        current_clients.insert(path.back().GetId());
+      else
+        current_clients.insert(0);
+    }
+
+    std::set<ClientInfo> best_options{GetClientsBestOptions(
+        problem, clients_set, current_clients, random_solutions_amount)};
+    ClientInfo option{GetRandomOption(best_options)};
+    for (auto& path : vehicles_paths) {
+      if (option.GetComeFrom() == 0) {
+        if (path.size() == 0) {
+          path.push_back(option);
+          clients_set.erase(option.GetId());
+          break;
+        }
+      } else {
+        if (path.back().GetId() == option.GetComeFrom()) {
+          path.push_back(option);
+          clients_set.erase(option.GetId());
+          break;
+        }
+      }
+    }
   }
+
+  return {vehicles_paths};
 }
 
 }  // namespace daa

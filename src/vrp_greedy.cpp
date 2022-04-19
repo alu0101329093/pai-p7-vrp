@@ -30,12 +30,12 @@ VrpSolution VrpGreedy::Solve(const VrpProblem& problem) {
         best_path = i;
       }
     }
-    vehicles_paths[best_path].push_back({current_client, best_distance});
+    vehicles_paths[best_path].push_back({current_client, best_distance, 0});
   }
   for (std::size_t i = 0; i < vehicles_paths.size(); ++i) {
     ClientInfo node{vehicles_paths[i].back()};
     vehicles_paths[i].push_back(
-        {0, problem.GetDistanceMatrix()[node.GetId()][0]});
+        {0, problem.GetDistanceMatrix()[node.GetId()][0], 0});
   }
 
   return {vehicles_paths};
@@ -48,7 +48,7 @@ VrpGreedy::GenerateClientList(const VrpProblem& problem) {
                       std::greater<ClientInfo>>
       clients_queue{};
   for (std::size_t i = 1; i <= problem.GetClientsAmount(); ++i) {
-    clients_queue.push({i, problem.GetDistanceMatrix()[0][i]});
+    clients_queue.push({i, problem.GetDistanceMatrix()[0][i], 0});
   }
   return clients_queue;
 }

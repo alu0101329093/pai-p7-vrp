@@ -3,7 +3,9 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 #include <iterator>
+#include <limits>
 #include <queue>
 #include <set>
 #include <vector>
@@ -30,10 +32,10 @@ class VrpGrasp {
  private:
   ClientsSet GenerateClientSet(const VrpProblem& problem);
 
-  std::set<ClientInfoFrom> GetClientsBestOptions(const VrpProblem& problem,
-                                                 const ClientsSet& clients_set,
-                                                 std::size_t client,
-                                                 std::size_t amount);
+  std::set<ClientInfo> GetClientsBestOptions(const VrpProblem& problem,
+                                             const ClientsSet& clients_set,
+                                             const ClientsSet& current_clients,
+                                             std::size_t amount);
 
   ClientInfo GetRandomOption(const std::set<ClientInfo>& options);
 

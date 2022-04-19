@@ -11,8 +11,12 @@ class ClientInfo {
 
   inline std::size_t GetId() const { return id_; }
   inline void SetId(std::size_t id) { id_ = id; }
+
   inline std::size_t GetDistance() const { return distance_; }
   inline void SetDistance(std::size_t distance) { distance_ = distance; }
+
+  inline std::size_t GetComeFrom() const { return come_from_; }
+  inline void SetComeFrom(std::size_t come_from) { come_from_ = come_from; }
 
   friend bool operator<(const ClientInfo& first_client,
                         const ClientInfo& second_client) {

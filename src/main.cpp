@@ -3,8 +3,12 @@
 int main(int argc, char* argv[]) {
   daa::VrpProblem problem{daa::ReadInfoFromFile(argv[1])};
   daa::VrpGreedy vrp_greedy{};
-  daa::VrpSolution solution{vrp_greedy.Solve(problem)};
-  std::cout << solution << std::endl;
+  daa::VrpSolution greedy_solution{vrp_greedy.Solve(problem)};
+  std::cout << greedy_solution << std::endl;
+  daa::VrpGrasp vrp_grasp{};
+  daa::VrpGraspSolution grasp_solution{vrp_grasp.Solve(problem, 100, 3, 10)};
+  std::cout << grasp_solution.GetBestSolution() << std::endl;
+
   return EXIT_SUCCESS;
 }
 

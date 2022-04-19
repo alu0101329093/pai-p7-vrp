@@ -22,6 +22,8 @@ class VrpSolution {
     vehicles_paths_ = vehicles_paths;
   }
 
+  std::size_t GetPathsDistanceSum() const;
+
   friend std::ostream& operator<<(std::ostream& os,
                                   const VrpSolution& solution) {
     os << "Vehicles:\n";
@@ -38,6 +40,7 @@ class VrpSolution {
                    : " -> ");
       }
     }
+    os << "Distance Sum: " << solution.GetPathsDistanceSum() << "\n";
     return os;
   }
 
