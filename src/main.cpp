@@ -6,7 +6,8 @@ int main(int argc, char* argv[]) {
   daa::VrpSolution greedy_solution{vrp_greedy.Solve(problem)};
   std::cout << greedy_solution << std::endl;
   daa::VrpGrasp vrp_grasp{};
-  daa::VrpGraspSolution grasp_solution{vrp_grasp.Solve(problem, 1000, 10, 500)};
+  daa::VrpGraspSolution grasp_solution{
+      vrp_grasp.Solve(problem, 10000, 2, 1000)};
   std::cout << grasp_solution.GetBestSolution() << std::endl;
 
   return EXIT_SUCCESS;
