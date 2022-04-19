@@ -43,7 +43,7 @@ class VrpGrasp {
                              std::size_t random_solutions_amount,
                              ClientsSet& clients_set);
 
-  VrpSolution SolveStartedGreedy(const VrpProblem& problem,
+  VrpSolution SolveStartedProblem(const VrpProblem& problem,
                                  const VrpSolution& partial_solution,
                                  std::size_t random_solutions_amount,
                                  ClientsSet& clients_set);

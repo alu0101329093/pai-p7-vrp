@@ -4,8 +4,18 @@
 
 namespace daa {
 
+/**
+ * @brief Construct a new Vrp Greedy:: Vrp Greedy object
+ * 
+ */
 VrpGreedy::VrpGreedy() {}
 
+/**
+ * @brief Solve greedy problem
+ * 
+ * @param problem 
+ * @return VrpSolution 
+ */
 VrpSolution VrpGreedy::Solve(const VrpProblem& problem) {
   VehiclesPaths vehicles_paths{problem.GetVehiclesAmount(),
                                std::vector<ClientInfo>{}};
