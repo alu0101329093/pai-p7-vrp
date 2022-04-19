@@ -1,0 +1,11 @@
+root = true
+
+# Config for c++ files
+[*.{h,cc,cpp}]
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+#Config for Makefile
+[Makefile]
+indent_style = tab
