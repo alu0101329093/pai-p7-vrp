@@ -40,7 +40,8 @@ class VrpGrasp : public VrpAlgorithm {
  private:
   VrpSolution ConstructionPhase(const VrpProblem& problem,
                                 VrpGraspOptions* options);
-  VrpSolution PostProcessing(const VrpSolution& solution,
+  VrpSolution PostProcessing(const VrpProblem& problem,
+                             const VrpSolution& solution,
                              VrpGraspOptions* options);
 
   ClientsSet GenerateClientSet(const VrpProblem& problem);

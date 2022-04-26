@@ -1,6 +1,7 @@
 #ifndef P7VRP_VRP_VRP_LOCAL_SEARCH_H_
 #define P7VRP_VRP_VRP_LOCAL_SEARCH_H_
 
+#include "vrp/vrp_problem.h"
 #include "vrp/vrp_solution.h"
 
 namespace daa {

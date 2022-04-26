@@ -29,7 +29,8 @@ VrpSolution VrpGrasp::Solve(const VrpProblem& problem,
        ++i) {
     VrpSolution construction_solution{
         ConstructionPhase(problem, parsedOptions)};
-    VrpSolution solution{PostProcessing(construction_solution, parsedOptions)};
+    VrpSolution solution{
+        PostProcessing(problem, construction_solution, parsedOptions)};
     solutions_history.push_back(solution);
     std::size_t distance_sum{solution.GetPathsDistanceSum()};
 
@@ -60,6 +61,12 @@ VrpSolution VrpGrasp::ConstructionPhase(const VrpProblem& problem,
       SetInitialPath(problem, random_solutions_amount, clients_set)};
   return SolveStartedProblem(problem, partial_solution, random_solutions_amount,
                              clients_set);
+}
+
+VrpSolution VrpGrasp::PostProcessing(const VrpProblem& problem,
+                                     const VrpSolution& solution,
+                                     VrpGraspOptions* options) {
+  return options->GetLocalSearch()->Execute(problem, solution);
 }
 
 /**
