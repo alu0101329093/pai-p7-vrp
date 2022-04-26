@@ -2,11 +2,14 @@
 #define P7VRP_VRP_VRP_GREEDY_H_
 
 #include <limits>
+#include <memory>
 #include <queue>
 #include <set>
 #include <vector>
 
 #include "vrp/client_info.h"
+#include "vrp/vrp_algorithm.h"
+#include "vrp/vrp_options.h"
 #include "vrp/vrp_problem.h"
 #include "vrp/vrp_solution.h"
 
@@ -18,11 +21,13 @@ typedef std::priority_queue<ClientInfo, std::vector<ClientInfo>,
                             std::greater<ClientInfo>>
     ClientsQueue;
 
-class VrpGreedy {
+class VrpGreedy : public VrpAlgorithm {
  public:
   VrpGreedy();
 
-  VrpSolution Solve(const VrpProblem& problem);
+  virtual VrpSolution Solve(const VrpProblem& problem,
+                            const std::unique_ptr<VrpOptions>& options =
+                                std::unique_ptr<VrpOptions>{}) override;
 
  private:
   std::priority_queue<ClientInfo, std::vector<ClientInfo>,

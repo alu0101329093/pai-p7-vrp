@@ -5,11 +5,10 @@
 #include <iostream>
 #include <string>
 
-#include "vrp/vrp_grasp.h"
-#include "vrp/vrp_grasp_solution.h"
-#include "vrp/vrp_greedy.h"
+#include "vrp/vrp_grasp_options.h"
 #include "vrp/vrp_problem.h"
 #include "vrp/vrp_solution.h"
+#include "vrp/vrp_solver.h"
 
 namespace daa {
 

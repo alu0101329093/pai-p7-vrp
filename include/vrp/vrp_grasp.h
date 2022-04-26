@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "vrp/client_info.h"
-#include "vrp/vrp_grasp_solution.h"
+#include "vrp/vrp_algorithm.h"
+#include "vrp/vrp_grasp_options.h"
+#include "vrp/vrp_options.h"
 #include "vrp/vrp_problem.h"
 #include "vrp/vrp_solution.h"
 
@@ -23,13 +25,24 @@ typedef std::priority_queue<ClientInfo, std::vector<ClientInfo>,
                             std::greater<ClientInfo>>
     ClientsQueue;
 
-class VrpGrasp {
+struct GraspState {
+  std::size_t best_solution_distance;
+  std::size_t best_solution;
+  std::size_t unchanged_iterations;
+};
+
+class VrpGrasp : public VrpAlgorithm {
  public:
-  VrpGraspSolution Solve(const VrpProblem& problem, std::size_t iterations,
-                         std::size_t random_solutions_amount,
-                         std::size_t max_unchanged_iterations);
+  virtual VrpSolution Solve(const VrpProblem& problem,
+                            const std::unique_ptr<VrpOptions>& options =
+                                std::unique_ptr<VrpOptions>{}) override;
 
  private:
+  VrpSolution ConstructionPhase(const VrpProblem& problem,
+                                VrpGraspOptions* options);
+  VrpSolution PostProcessing(const VrpSolution& solution,
+                             VrpGraspOptions* options);
+
   ClientsSet GenerateClientSet(const VrpProblem& problem);
 
   std::set<ClientInfo> GetClientsBestOptions(const VrpProblem& problem,
@@ -44,9 +57,9 @@ class VrpGrasp {
                              ClientsSet& clients_set);
 
   VrpSolution SolveStartedProblem(const VrpProblem& problem,
-                                 const VrpSolution& partial_solution,
-                                 std::size_t random_solutions_amount,
-                                 ClientsSet& clients_set);
+                                  const VrpSolution& partial_solution,
+                                  std::size_t random_solutions_amount,
+                                  ClientsSet& clients_set);
 
   VehiclesPaths SetReturnPaths(const VrpProblem& problem,
                                const VehiclesPaths& vehicles_paths);

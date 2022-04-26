@@ -9,38 +9,57 @@ namespace daa {
  * @param iterations
  * @param random_solutions_amount
  * @param max_unchanged_iterations
- * @return VrpGraspSolution - Solutions history and best solution
+ * @return VrpSolution - Solutions history and best solution
  */
-VrpGraspSolution VrpGrasp::Solve(const VrpProblem& problem,
-                                 std::size_t iterations,
-                                 std::size_t random_solutions_amount,
-                                 std::size_t max_unchanged_iterations) {
-  std::srand(std::time(nullptr));
+VrpSolution VrpGrasp::Solve(const VrpProblem& problem,
+                            const std::unique_ptr<VrpOptions>& options) {
   std::vector<VrpSolution> solutions_history{};
-  std::size_t best_solution_distance{SIZE_MAX};
-  std::size_t best_solution{};
-  std::size_t unchanged_iterations{};
+  GraspState state{SIZE_MAX, 0, 0};
 
+  VrpGraspOptions* parsedOptions =
+      reinterpret_cast<VrpGraspOptions*>(options.get());
+  // if (parsedOptions == nullptr) throw
+  std::size_t iterations = parsedOptions->GetIterations();
+  std::size_t max_unchanged_iterations =
+      parsedOptions->GetMaxUnchangedIterations();
+
+  std::srand(std::time(nullptr));
   for (std::size_t i = 0;
-       i < iterations && unchanged_iterations < max_unchanged_iterations; ++i) {
-    ClientsSet clients_set{GenerateClientSet(problem)};
-    VrpSolution partial_solution{
-        SetInitialPath(problem, random_solutions_amount, clients_set)};
-    VrpSolution solution{SolveStartedProblem(
-        problem, partial_solution, random_solutions_amount, clients_set)};
+       i < iterations && state.unchanged_iterations < max_unchanged_iterations;
+       ++i) {
+    VrpSolution construction_solution{
+        ConstructionPhase(problem, parsedOptions)};
+    VrpSolution solution{PostProcessing(construction_solution, parsedOptions)};
     solutions_history.push_back(solution);
     std::size_t distance_sum{solution.GetPathsDistanceSum()};
 
-    if (distance_sum < best_solution_distance) {
-      best_solution = solutions_history.size() - 1;
-      best_solution_distance = distance_sum;
-      unchanged_iterations = 0;
+    if (distance_sum < state.best_solution_distance) {
+      state.best_solution = solutions_history.size() - 1;
+      state.best_solution_distance = distance_sum;
+      state.unchanged_iterations = 0;
     } else {
-      ++unchanged_iterations;
+      ++state.unchanged_iterations;
     }
   }
 
-  return VrpGraspSolution{solutions_history, best_solution};
+  return solutions_history[state.best_solution];
+}
+
+/**
+ * @brief Grasp construction phase that generate a solution
+ *
+ * @param problem
+ * @param options
+ * @return VrpSolution
+ */
+VrpSolution VrpGrasp::ConstructionPhase(const VrpProblem& problem,
+                                        VrpGraspOptions* options) {
+  std::size_t random_solutions_amount = options->GetRandomSolutionsAmount();
+  ClientsSet clients_set{GenerateClientSet(problem)};
+  VrpSolution partial_solution{
+      SetInitialPath(problem, random_solutions_amount, clients_set)};
+  return SolveStartedProblem(problem, partial_solution, random_solutions_amount,
+                             clients_set);
 }
 
 /**

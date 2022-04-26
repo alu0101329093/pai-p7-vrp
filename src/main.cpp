@@ -2,13 +2,14 @@
 
 int main(int argc, char* argv[]) {
   daa::VrpProblem problem{daa::ReadInfoFromFile(argv[1])};
-  daa::VrpGreedy vrp_greedy{};
-  daa::VrpSolution greedy_solution{vrp_greedy.Solve(problem)};
+  daa::VrpSolver solver{};
+  solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGreedy);
+  daa::VrpSolution greedy_solution{solver.Solve(problem)};
   std::cout << greedy_solution << std::endl;
-  daa::VrpGrasp vrp_grasp{};
-  daa::VrpGraspSolution grasp_solution{
-      vrp_grasp.Solve(problem, 10000, 2, 1000)};
-  std::cout << grasp_solution.GetBestSolution() << std::endl;
+  solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGrasp);
+  daa::VrpSolution grasp_solution{solver.Solve(
+      problem, std::make_unique<daa::VrpGraspOptions>(10000, 3, 1000))};
+  std::cout << grasp_solution << std::endl;
 
   return EXIT_SUCCESS;
 }

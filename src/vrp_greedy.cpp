@@ -16,7 +16,8 @@ VrpGreedy::VrpGreedy() {}
  * @param problem
  * @return VrpSolution
  */
-VrpSolution VrpGreedy::Solve(const VrpProblem& problem) {
+VrpSolution VrpGreedy::Solve(const VrpProblem& problem,
+                             const std::unique_ptr<VrpOptions>&) {
   VehiclesPaths vehicles_paths{problem.GetVehiclesAmount(),
                                std::vector<ClientInfo>{}};
   std::set<std::size_t> clients_set{GenerateClientsSet(problem)};
