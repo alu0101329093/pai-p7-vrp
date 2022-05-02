@@ -25,8 +25,8 @@ VrpSolution VrpIntraRouteExchange::Execute(const VrpProblem& problem,
     VrpSolution current_solution{best_local};
     for (std::size_t i = 0; i < local_paths.size(); ++i) {
       if (local_paths[i].size() > 3) {
-        for (std::size_t j = 1; j < (local_paths[i].size() - 1); ++j) {
-          for (std::size_t k = j; k < (local_paths[i].size() - 1); ++k) {
+        for (std::size_t j = 1; j < local_paths[i].size() - 1; ++j) {
+          for (std::size_t k = j + 1; k < local_paths[i].size() - 1; ++k) {
             VehiclesPaths current_paths{local_paths};
             ExchangePositions(problem, current_paths, i, j, k);
             current_solution.SetVehiclesPaths(current_paths);
