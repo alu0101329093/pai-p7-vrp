@@ -6,6 +6,7 @@
 #include <string>
 
 #include "vrp/vrp_grasp_options.h"
+#include "vrp/vrp_intra_route_exchange.h"
 #include "vrp/vrp_problem.h"
 #include "vrp/vrp_solution.h"
 #include "vrp/vrp_solver.h"

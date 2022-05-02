@@ -4,24 +4,24 @@
 #include <cstdlib>
 
 #include "vrp/client_info.h"
-#include "vrp/exchange_info.h"
 #include "vrp/vrp_local_search.h"
 #include "vrp/vrp_problem.h"
 #include "vrp/vrp_solution.h"
 
 namespace daa {
 
-class VrpRouteExchange : public VrpLocalSearch {
+class VrpIntraRouteExchange : public VrpLocalSearch {
  public:
-  enum Type { kIntra, kBetween };
-  VrpRouteExchange(Type type = Type::kIntra);
+  VrpIntraRouteExchange();
 
   virtual VrpSolution Execute(const VrpProblem& problem,
                               const VrpSolution& solution) override;
 
  private:
-  ExchangeInfo GetExchangeInfo(const VrpSolution& solution);
-  Type type_;
+  void ExchangePositions(const VrpProblem& problem,
+                         VehiclesPaths& vehicle_paths, std::size_t path,
+                         std::size_t first_position,
+                         std::size_t second_position);
 };
 
 }  // namespace daa

@@ -13,9 +13,9 @@ typedef std::vector<std::vector<ClientInfo>> VehiclesPaths;
 
 class VrpSolution {
  public:
-  VrpSolution(const VehiclesPaths& vehicles_paths);
+  VrpSolution(const VehiclesPaths& vehicles_paths = VehiclesPaths{});
 
-  inline const VehiclesPaths GetVehiclesPaths() const {
+  inline const VehiclesPaths& GetVehiclesPaths() const {
     return vehicles_paths_;
   }
   inline void SetVehiclesPaths(const VehiclesPaths& vehicles_paths) {
