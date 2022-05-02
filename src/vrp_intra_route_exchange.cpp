@@ -23,12 +23,12 @@ VrpSolution VrpIntraRouteExchange::Execute(const VrpProblem& problem,
     VrpSolution best_solution{best_local};
     VehiclesPaths local_paths{best_local.GetVehiclesPaths()};
     VrpSolution current_solution{best_local};
-    for (std::size_t i = 0; i < local_paths.size(); ++i) {
-      if (local_paths[i].size() > 3) {
-        for (std::size_t j = 1; j < local_paths[i].size() - 1; ++j) {
-          for (std::size_t k = j + 1; k < local_paths[i].size() - 1; ++k) {
+    for (std::size_t path = 0; path < local_paths.size(); ++path) {
+      if (local_paths[path].size() > 3) {
+        for (std::size_t i = 1; i < local_paths[path].size() - 1; ++i) {
+          for (std::size_t j = i + 1; j < local_paths[path].size() - 1; ++j) {
             VehiclesPaths current_paths{local_paths};
-            ExchangePositions(problem, current_paths, i, j, k);
+            ExchangePositions(problem, current_paths, path, i, j);
             current_solution.SetVehiclesPaths(current_paths);
             if (current_solution.GetPathsDistanceSum() <
                 best_solution.GetPathsDistanceSum()) {
