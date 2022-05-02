@@ -52,8 +52,9 @@ VrpSolution VrpInterRouteExchange::Execute(const VrpProblem& problem,
  *
  * @param problem
  * @param vehicle_paths
- * @param path
+ * @param first_path
  * @param first_position
+ * @param second_path
  * @param second_position
  */
 void VrpInterRouteExchange::ExchangePositions(const VrpProblem& problem,
