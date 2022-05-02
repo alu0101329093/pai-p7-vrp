@@ -13,8 +13,11 @@ namespace daa {
  */
 VrpSolution VrpGrasp::Solve(const VrpProblem& problem,
                             const std::unique_ptr<VrpOptions>& options) {
-  std::vector<VrpSolution> solutions_history{};
-  GraspState state{SIZE_MAX, 0, 0};
+  // std::vector<VrpSolution> solutions_history{};
+  // GraspState state{SIZE_MAX, 0, 0};
+  std::size_t best_solution_distance{SIZE_MAX};
+  VrpSolution best_solution{};
+  std::size_t unchanged_iterations{};
 
   VrpGraspOptions* parsedOptions =
       reinterpret_cast<VrpGraspOptions*>(options.get());
@@ -25,25 +28,25 @@ VrpSolution VrpGrasp::Solve(const VrpProblem& problem,
 
   std::srand(std::time(nullptr));
   for (std::size_t i = 0;
-       i < iterations && state.unchanged_iterations < max_unchanged_iterations;
-       ++i) {
+       i < iterations && unchanged_iterations < max_unchanged_iterations; ++i) {
     VrpSolution construction_solution{
         ConstructionPhase(problem, parsedOptions)};
+
     VrpSolution solution{
         PostProcessing(problem, construction_solution, parsedOptions)};
-    solutions_history.push_back(solution);
+    // solutions_history.push_back(solution);
     std::size_t distance_sum{solution.GetPathsDistanceSum()};
 
-    if (distance_sum < state.best_solution_distance) {
-      state.best_solution = solutions_history.size() - 1;
-      state.best_solution_distance = distance_sum;
-      state.unchanged_iterations = 0;
+    if (distance_sum < best_solution_distance) {
+      best_solution.SetVehiclesPaths(solution.GetVehiclesPaths());
+      best_solution_distance = distance_sum;
+      unchanged_iterations = 0;
     } else {
-      ++state.unchanged_iterations;
+      ++unchanged_iterations;
     }
   }
 
-  return solutions_history[state.best_solution];
+  return best_solution;
 }
 
 /**
@@ -167,9 +170,13 @@ VrpSolution VrpGrasp::SolveStartedProblem(const VrpProblem& problem,
                                           std::size_t random_solutions_amount,
                                           ClientsSet& clients_set) {
   VehiclesPaths vehicles_paths{partial_solution.GetVehiclesPaths()};
+  const std::size_t kVehicleMaxClients{static_cast<std::size_t>(
+      problem.GetClientsAmount() / problem.GetVehiclesAmount() +
+      problem.GetClientsAmount() * 0.1)};
   while (!clients_set.empty()) {
     ClientsSet current_clients{};
     for (const auto& path : vehicles_paths) {
+      if (path.size() >= kVehicleMaxClients) continue;
       if (path.size() > 0)
         current_clients.insert(path.back().GetId());
       else

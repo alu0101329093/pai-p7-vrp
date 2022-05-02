@@ -105,8 +105,13 @@ ClientInfo VrpGreedy::GetBestOption(const VrpProblem& problem,
                                     std::set<std::size_t> clients_set,
                                     const VehiclesPaths& vehicles_paths) {
   ClientsQueue clients_queue{};
+
+  const std::size_t kVehicleMaxClients{static_cast<std::size_t>(
+      problem.GetClientsAmount() / problem.GetVehiclesAmount() +
+      problem.GetClientsAmount() * 0.1)};
   for (auto path : vehicles_paths) {
     std::size_t current_client{path.back().GetId()};
+    if (path.size() >= kVehicleMaxClients) continue;
     for (auto client : clients_set) {
       clients_queue.push({client,
                           problem.GetDistanceMatrix()[current_client][client],
