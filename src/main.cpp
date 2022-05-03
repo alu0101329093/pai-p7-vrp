@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
   solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGrasp);
   daa::VrpSolution grasp_solution{
       solver.Solve(problem, std::make_unique<daa::VrpGraspOptions>(
-                                1000, 3, 500, new daa::VrpIntraRouteReinsert))};
+                                1000, 3, 500, new daa::VrpInterRouteReinsert))};
   std::cout << grasp_solution << std::endl;
 
   return EXIT_SUCCESS;
