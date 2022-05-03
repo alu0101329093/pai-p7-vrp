@@ -29,14 +29,12 @@ VrpSolution VrpGvns::Solve(const VrpProblem& problem,
   VrpSolver grasp{};
   grasp.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGrasp);
   VrpSolution best_solution{grasp.Solve(
-      problem, std::make_unique<VrpGraspOptions>(iterations, 3, iterations / 2,
-                                                 new VrpInterRouteReinsert))};
-  std::srand(std::time(nullptr));
+      problem,
+      std::make_unique<VrpGraspOptions>(1, 3, 2, new VrpIntraRouteExchange))};
   for (std::size_t i = 0; i < iterations; ++i) {
     VrpSolution current_solution{grasp.Solve(
         problem,
-        std::make_unique<VrpGraspOptions>(iterations, 3, iterations / 2,
-                                          new VrpInterRouteReinsert))};
+        std::make_unique<VrpGraspOptions>(1, 3, 2, new VrpIntraRouteExchange))};
     current_solution = Gvns(problem, current_solution);
     if (current_solution.GetPathsDistanceSum() <
         best_solution.GetPathsDistanceSum())
@@ -59,6 +57,7 @@ VrpSolution VrpGvns::Gvns(const VrpProblem& problem,
   const std::size_t max_jumps =
       static_cast<std::size_t>(problem.GetClientsAmount() * 0.2);
   std::size_t current_jump{};
+  std::srand(std::time(nullptr));
 
   while (current_jump < max_jumps) {
     VrpSolution shaking_solution{Shaking(problem, current_jump, best_solution)};
@@ -96,17 +95,32 @@ VrpSolution VrpGvns::Gvns(const VrpProblem& problem,
  */
 VrpSolution VrpGvns::Shaking(const VrpProblem& problem, std::size_t amount,
                              const VrpSolution& solution) {
+  const std::size_t kVehicleMaxClients{static_cast<std::size_t>(
+      problem.GetClientsAmount() / problem.GetVehiclesAmount() +
+      problem.GetClientsAmount() * 0.1)};
   VehiclesPaths vehicles_paths{solution.GetVehiclesPaths()};
   std::size_t old_path{SIZE_MAX};
   std::size_t old_position{SIZE_MAX};
   VrpInterRouteReinsert reinsert{};
   for (std::size_t i = 0; i < amount; ++i) {
+    std::size_t siz{vehicles_paths.size()};
     std::size_t first_path{std::rand() % vehicles_paths.size()};
+    if (vehicles_paths[first_path].size() < 3) {
+      --i;
+      continue;
+    }
     std::size_t first_position{
         std::rand() % (vehicles_paths[first_path].size() - 2) + 1};
     std::size_t second_path{std::rand() % vehicles_paths.size()};
-    std::size_t second_position{
-        std::rand() % (vehicles_paths[second_path].size() - 2) + 1};
+    if (vehicles_paths[second_path].size() >= kVehicleMaxClients) {
+      --i;
+      continue;
+    }
+    std::size_t second_position{1};
+    if (vehicles_paths[second_path].size() > 3) {
+      second_position =
+          std::rand() % (vehicles_paths[second_path].size() - 2) + 1;
+    }
     if (old_path == second_path && old_position == second_position) {
       --i;
       continue;
@@ -134,8 +148,6 @@ void VrpGvns::InsertPosition(const VrpProblem& problem,
                              std::size_t first_path, std::size_t first_position,
                              std::size_t second_path,
                              std::size_t second_position) {
-  std::size_t f_size{vehicle_paths[first_path].size()};
-  std::size_t s_size{vehicle_paths[second_path].size()};
   ClientInfo client{vehicle_paths[first_path][first_position]};
 
   vehicle_paths[first_path][first_position + 1].SetComeFrom(

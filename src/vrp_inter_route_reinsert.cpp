@@ -13,6 +13,9 @@ VrpInterRouteReinsert::VrpInterRouteReinsert() {}
  */
 VrpSolution VrpInterRouteReinsert::Execute(const VrpProblem& problem,
                                            const VrpSolution& solution) {
+  const std::size_t kVehicleMaxClients{static_cast<std::size_t>(
+      problem.GetClientsAmount() / problem.GetVehiclesAmount() +
+      problem.GetClientsAmount() * 0.1)};
   DistanceMatrix distance_matrix = problem.GetDistanceMatrix();
   VrpSolution best_local{solution};
   VrpSolution old_local{solution};
@@ -28,6 +31,7 @@ VrpSolution VrpInterRouteReinsert::Execute(const VrpProblem& problem,
       for (std::size_t i = 1; i < local_paths[first_route].size() - 1; ++i) {
         for (std::size_t second_route = first_route;
              second_route < local_paths.size(); ++second_route) {
+          if (local_paths[second_route].size() >= kVehicleMaxClients) continue;
           for (std::size_t j = 1; j < local_paths[second_route].size() -
                                           (first_route == second_route ? 1 : 0);
                ++j) {
