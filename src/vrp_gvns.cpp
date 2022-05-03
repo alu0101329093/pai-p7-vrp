@@ -30,11 +30,11 @@ VrpSolution VrpGvns::Solve(const VrpProblem& problem,
   grasp.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGrasp);
   VrpSolution best_solution{grasp.Solve(
       problem,
-      std::make_unique<VrpGraspOptions>(1, 3, 2, new VrpIntraRouteExchange))};
+      std::make_unique<VrpGraspOptions>(1, 3, 2, new VrpInterRouteExchange))};
   for (std::size_t i = 0; i < iterations; ++i) {
     VrpSolution current_solution{grasp.Solve(
         problem,
-        std::make_unique<VrpGraspOptions>(1, 3, 2, new VrpIntraRouteExchange))};
+        std::make_unique<VrpGraspOptions>(1, 3, 2, new VrpInterRouteExchange))};
     current_solution = Gvns(problem, current_solution);
     if (current_solution.GetPathsDistanceSum() <
         best_solution.GetPathsDistanceSum())
@@ -65,6 +65,8 @@ VrpSolution VrpGvns::Gvns(const VrpProblem& problem,
     while (current_search < local_searchs_.size()) {
       VrpSolution local_solution{
           local_searchs_[current_search]->Execute(problem, shaking_solution)};
+      auto l{local_solution.GetPathsDistanceSum()};
+      auto s{shaking_solution.GetPathsDistanceSum()};
       if (local_solution.GetPathsDistanceSum() <
           shaking_solution.GetPathsDistanceSum()) {
         shaking_solution = local_solution;
@@ -73,6 +75,8 @@ VrpSolution VrpGvns::Gvns(const VrpProblem& problem,
         ++current_search;
       }
     }
+    auto sa{shaking_solution.GetPathsDistanceSum()};
+    auto sb{best_solution.GetPathsDistanceSum()};
     if (shaking_solution.GetPathsDistanceSum() <
         best_solution.GetPathsDistanceSum()) {
       best_solution = shaking_solution;

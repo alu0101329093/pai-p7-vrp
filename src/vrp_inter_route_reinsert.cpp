@@ -42,7 +42,7 @@ VrpSolution VrpInterRouteReinsert::Execute(const VrpProblem& problem,
             current_solution.SetVehiclesPaths(current_paths);
             if (current_solution.GetPathsDistanceSum() <
                 best_solution.GetPathsDistanceSum()) {
-              best_solution.SetVehiclesPaths(current_paths);
+              best_local = current_paths;
             }
           }
         }
