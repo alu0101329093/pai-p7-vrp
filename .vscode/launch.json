@@ -5,7 +5,7 @@
       "name": "Debug",
       "type": "cppdbg",
       "request": "launch",
-      "args": ["bin/I40j_2m_S1_1.txt"],
+      "args": ["examples"],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
