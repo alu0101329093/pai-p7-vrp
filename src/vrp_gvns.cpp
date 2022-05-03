@@ -113,6 +113,8 @@ VrpSolution VrpGvns::Shaking(const VrpProblem& problem, std::size_t amount,
     }
     InsertPosition(problem, vehicles_paths, first_path, first_position,
                    second_path, second_position);
+    old_path = second_path;
+    old_position = second_position;
   }
   return VrpSolution{vehicles_paths};
 }

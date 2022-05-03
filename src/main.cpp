@@ -1,24 +1,51 @@
 #include "main.h"
 
 int main(int argc, char* argv[]) {
-  daa::VrpProblem problem{daa::ReadInfoFromFile(argv[1])};
+  std::string path{argv[1]};
+  // daa::VrpProblem problem{daa::ReadInfoFromFile(argv[1])};
   daa::VrpSolver solver{};
-  solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGreedy);
-  daa::VrpSolution greedy_solution{solver.Solve(problem)};
-  std::cout << greedy_solution << std::endl;
+  std::cout << "|  FileName  |  Algorithm  |    Cost    | Time in ms |\n";
+  for (const auto& entry :
+       std::filesystem::directory_iterator{std::filesystem::path{path}}) {
+    daa::VrpProblem problem{daa::ReadInfoFromFile(entry.path().string())};
+    std::cout << "| " << entry.path().string() << " | ";
+    std::cout << "  Greedy   | ";
+    solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGreedy);
+    const auto start_time = std::chrono::steady_clock::now();
+    daa::VrpSolution greedy_solution{solver.Solve(problem)};
+    auto actual_time = std::chrono::steady_clock::now();
+    auto execution_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+        actual_time - start_time);
+    std::cout << "   " << greedy_solution.GetPathsDistanceSum() << "   | ";
+    std::cout << "   " << execution_time.count() << "ms   | \n";
 
-  solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGrasp);
-  daa::VrpSolution grasp_solution{
-      solver.Solve(problem, std::make_unique<daa::VrpGraspOptions>(
-                                1000, 3, 500, new daa::VrpInterRouteReinsert))};
+    std::cout << "| " << entry.path().string() << " | ";
+    std::cout << "   Gvns    | ";
+    solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGreedy);
+    const auto start_time = std::chrono::steady_clock::now();
+    daa::VrpSolution gvns_solution{
+        solver.Solve(problem, std::make_unique<daa::VrpGvnsOptions>(100))};
+    auto actual_time = std::chrono::steady_clock::now();
+    auto execution_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+        actual_time - start_time);
+    std::cout << "   " << gvns_solution.GetPathsDistanceSum() << "   | ";
+    std::cout << "   " << execution_time.count() << "ms   | \n";
+  }
+  // std::cout << greedy_solution << std::endl;
 
-  std::cout << grasp_solution << std::endl;
-  
-  solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGvns);
-  daa::VrpSolution gvns_solution{
-      solver.Solve(problem, std::make_unique<daa::VrpGvnsOptions>(100))};
+  // solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGrasp);
+  // daa::VrpSolution grasp_solution{
+  //     solver.Solve(problem, std::make_unique<daa::VrpGraspOptions>(
+  //                               1000, 3, 500, new
+  //                               daa::VrpInterRouteReinsert))};
 
-  std::cout << gvns_solution << std::endl;
+  // std::cout << grasp_solution << std::endl;
+
+  // solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGvns);
+  // daa::VrpSolution gvns_solution{
+  //     solver.Solve(problem, std::make_unique<daa::VrpGvnsOptions>(100))};
+
+  // std::cout << gvns_solution << std::endl;
 
   return EXIT_SUCCESS;
 }

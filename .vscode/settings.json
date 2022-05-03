@@ -45,6 +45,8 @@
     "set": "cpp",
     "xtree": "cpp",
     "ctime": "cpp",
-    "iterator": "cpp"
+    "iterator": "cpp",
+    "filesystem": "cpp",
+    "chrono": "cpp"
   }
 }
