@@ -11,25 +11,41 @@ int main(int argc, char* argv[]) {
     std::cout << "| " << entry.path().string() << " | ";
     std::cout << "  Greedy   | ";
     solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGreedy);
-    const auto start_time = std::chrono::steady_clock::now();
+    auto greedy_start_time = std::chrono::steady_clock::now();
     daa::VrpSolution greedy_solution{solver.Solve(problem)};
-    auto actual_time = std::chrono::steady_clock::now();
-    auto execution_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-        actual_time - start_time);
+    auto greedy_actual_time = std::chrono::steady_clock::now();
+    auto greedy_execution_time =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            greedy_actual_time - greedy_start_time);
     std::cout << "   " << greedy_solution.GetPathsDistanceSum() << "   | ";
-    std::cout << "   " << execution_time.count() << "ms   | \n";
+    std::cout << "   " << greedy_execution_time.count() << "ms   | \n";
+
+    std::cout << "| " << entry.path().string() << " | ";
+    std::cout << "   Grasp    | ";
+    solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGrasp);
+    const auto grasp_start_time = std::chrono::steady_clock::now();
+    daa::VrpSolution grasp_solution{solver.Solve(
+        problem, std::make_unique<daa::VrpGraspOptions>(
+                     1000, 3, 100, new daa::VrpInterRouteExchange))};
+    auto grasp_actual_time = std::chrono::steady_clock::now();
+    auto grasp_execution_time =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            grasp_actual_time - grasp_start_time);
+    std::cout << "   " << grasp_solution.GetPathsDistanceSum() << "   | ";
+    std::cout << "   " << grasp_execution_time.count() << "ms   | \n";
 
     std::cout << "| " << entry.path().string() << " | ";
     std::cout << "   Gvns    | ";
-    solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGreedy);
-    const auto start_time = std::chrono::steady_clock::now();
+    solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGvns);
+    const auto gvns_start_time = std::chrono::steady_clock::now();
     daa::VrpSolution gvns_solution{
         solver.Solve(problem, std::make_unique<daa::VrpGvnsOptions>(100))};
-    auto actual_time = std::chrono::steady_clock::now();
-    auto execution_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-        actual_time - start_time);
+    auto gvns_actual_time = std::chrono::steady_clock::now();
+    auto gvns_execution_time =
+        std::chrono::duration_cast<std::chrono::milliseconds>(gvns_actual_time -
+                                                              gvns_start_time);
     std::cout << "   " << gvns_solution.GetPathsDistanceSum() << "   | ";
-    std::cout << "   " << execution_time.count() << "ms   | \n";
+    std::cout << "   " << gvns_execution_time.count() << "ms   | \n";
   }
   // std::cout << greedy_solution << std::endl;
 
