@@ -14,10 +14,14 @@ VrpSolution VrpSolver::Solve(const VrpProblem& problem,
 void VrpSolver::SetAlgorithm(AlgorithmTypes type) {
   switch (type) {
     case AlgorithmTypes::kGreedy:
-      algorithm_.reset(new VrpGreedy());
+      algorithm_.reset(new VrpGreedy{});
       break;
     case AlgorithmTypes::kGrasp:
-      algorithm_.reset(new VrpGrasp());
+      algorithm_.reset(new VrpGrasp{});
+      break;
+    case AlgorithmTypes::kGvns:
+      algorithm_.reset(new VrpGvns{});
+      break;
     default:
       break;
   }

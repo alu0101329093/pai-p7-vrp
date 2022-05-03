@@ -6,6 +6,7 @@
 #include "vrp/vrp_algorithm.h"
 #include "vrp/vrp_grasp.h"
 #include "vrp/vrp_greedy.h"
+#include "vrp/vrp_gvns.h"
 #include "vrp/vrp_options.h"
 #include "vrp/vrp_problem.h"
 #include "vrp/vrp_solution.h"
@@ -14,7 +15,7 @@ namespace daa {
 
 class VrpSolver {
  public:
-  enum class AlgorithmTypes { kGreedy, kGrasp };
+  enum class AlgorithmTypes { kGreedy, kGrasp, kGvns };
 
   VrpSolver();
 

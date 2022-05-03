@@ -6,11 +6,19 @@ int main(int argc, char* argv[]) {
   solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGreedy);
   daa::VrpSolution greedy_solution{solver.Solve(problem)};
   std::cout << greedy_solution << std::endl;
+
   solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGrasp);
   daa::VrpSolution grasp_solution{
       solver.Solve(problem, std::make_unique<daa::VrpGraspOptions>(
                                 1000, 3, 500, new daa::VrpInterRouteReinsert))};
+
   std::cout << grasp_solution << std::endl;
+  
+  solver.SetAlgorithm(daa::VrpSolver::AlgorithmTypes::kGvns);
+  daa::VrpSolution gvns_solution{
+      solver.Solve(problem, std::make_unique<daa::VrpGvnsOptions>(100))};
+
+  std::cout << gvns_solution << std::endl;
 
   return EXIT_SUCCESS;
 }
